@@ -1,3 +1,4 @@
+const _ = require('lodash');
 
 class Player {
   constructor(game, side) {
@@ -34,15 +35,15 @@ class Computer extends Player {
   play() {
     const { game, side } = this;
 
-    for(let y = 0; y < 3; y++) {
-      for(let x = 0; x < 3; x++) {
-        if(game.board[y][x] === ' ') {
-          game.move(y, x, side);
+    const coords = game.getRandomPlayableSquare();
 
-          return;
-        }
-      }
+    if(!coords) {
+      throw Error('Unable to make a move.');
     }
+
+    const { y, x } = coords;
+
+    game.move(y, x, side);
   }
 };
 
@@ -51,7 +52,7 @@ class HumanVsComputerMatch {
     const game = this.game = new Game();
 
     this.players = {
-      human: new Player(game, human),
+      human: new Human(game, human),
       computer: new Computer(game, computer),
     };
 
@@ -62,12 +63,9 @@ class HumanVsComputerMatch {
     }
   }
 
-  next() {
-    if(this.turn === this.players.human) {
-      this.turn = this.players.computer;
-    } else {
-      this.turn = this.players.human;
-    }
+  nextTurn() {
+    this.turn = this.turn === this.players.human ?
+      this.players.computer : this.players.human;
   }
 
   human(y, x) {
@@ -77,7 +75,7 @@ class HumanVsComputerMatch {
 
     this.players.human.play(y, x);
 
-    this.next();
+    this.nextTurn();
   }
 
   computer() {
@@ -87,7 +85,11 @@ class HumanVsComputerMatch {
 
     this.players.computer.play();
 
-    this.next();
+    this.nextTurn();
+  }
+
+  get canMove() {
+    return _.flatten(this.game.board).filter(square => square === ' ').length > 0;
   }
 
   status() {
@@ -101,7 +103,7 @@ class Game {
   }
 
   get draw() {
-    return this.board.filter(row => row.filter(cell => cell !== ' ').length === 0).length === 0;
+    return _.flatten(this.board).every(square => square !== ' ');
   }
 
   checkWin(side) {
@@ -149,13 +151,35 @@ class Game {
   }
 
   move(y, x, side) {
-    if(this.board[x][y] !== ' ') {
+    if(this.board[y][x] !== ' ') {
       throw new Error('Invalid move. Square is already played.');
     }
 
-    this.board[x][y] = side;
+    this.board[y][x] = side;
 
     return this.status();
+  }
+
+  getRandomPlayableSquare() {
+    const empty = [];
+
+    for(let y = 0; y < 3; y++) {
+      for(let x = 0; x < 3; x++) {
+        if(this.board[y][x] === ' ') {
+          empty.push({y, x});
+        }
+      }
+    }
+
+    const randomNumber = (min, max) => Math.floor(Math.random() * (max - min + 1)) + min;
+
+    if(empty.length === 0) {
+      return null;
+    } else if(empty.length === 1) {
+      return empty[0];
+    } else {
+      return empty[randomNumber(0, empty.length-1)];
+    }
   }
 };
 

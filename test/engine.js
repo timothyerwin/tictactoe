@@ -152,6 +152,17 @@ describe('Game', function() {
     game.win.should.equal('O');
     game.status().win.should.equal('O');
   });
+
+  it('getRandomPlayableSquare should return a valid playable square', function() {
+    const game = new Game();
+
+    game.should.be.ok;
+
+    const square = game.getRandomPlayableSquare();
+
+    square.x.should.be.within(0, 2);
+    square.y.should.be.within(0, 2);
+  });
 });
 
 describe('HumanVsComputerMatch', function() {
@@ -185,11 +196,37 @@ describe('HumanVsComputerMatch', function() {
     match.turn.side.should.equal('O');
   });
 
-  // it('should play a game', function() {
-  //   const match = new HumanVsComputerMatch('X', 'O');
-  //
-  //   while(!match.game.over) {
-  //
-  //   }
-  // });
+  it('canMove should return true', function() {
+    const match = new HumanVsComputerMatch('O', 'X');
+
+    match.canMove.should.be.true;
+  });
+
+  it('canMove should return false', function() {
+    const match = new HumanVsComputerMatch('O', 'X');
+
+    match.game.board = [['X', '0', 'X'], ['X', '0', 'X'], ['X', '0', 'X']];
+
+    match.canMove.should.be.false;
+  });
+
+  it('should play a game', function() {
+    const match = new HumanVsComputerMatch('X', 'O');
+
+    while(!match.game.over) {
+      if(match.turn === match.players.human) {
+        const { y, x } = match.game.getRandomPlayableSquare();
+
+        match.human(y, x);
+      } else {
+        match.computer();
+      }
+    }
+
+    match.game.over.should.be.true;
+
+    if(!match.game.draw) {
+      match.game.win.should.be.ok;
+    }
+  });
 });
