@@ -1,0 +1,32 @@
+{
+  "name": "tictactoe",
+  "version": "1.0.0",
+  "description": "Tic Tac Toe Engine",
+  "main": "engine.js",
+  "scripts": {
+    "test": "mocha"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/timothyerwin/tictactoe.git"
+  },
+  "keywords": [
+    "tic",
+    "tac",
+    "toe"
+  ],
+  "author": "Tim Erwin",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/timothyerwin/tictactoe/issues"
+  },
+  "homepage": "https://github.com/timothyerwin/tictactoe#readme",
+  "devDependencies": {
+    "assert": "^1.4.1",
+    "expect": "^22.4.0",
+    "should": "^13.2.1"
+  },
+  "dependencies": {
+    "lodash": "^4.17.5"
+  }
+}
